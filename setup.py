@@ -34,7 +34,7 @@ def read(*path):
 
 
 setup(name='fresco-fs',
-      version='0.1.dev0',
+      version=get_version(),
       description='Filesystem resources for fresco',
       long_description=read('README.rst') + "\n\n" + read("CHANGELOG.rst"),
       url='https://skot.be/',
