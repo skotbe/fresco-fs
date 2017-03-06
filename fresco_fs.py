@@ -19,7 +19,7 @@ from fresco.exceptions import NotFound
 
 from fresco.util.urls import normpath as url_normpath
 
-__version__ = '0.1dev'
+__version__ = '0.1.dev0'
 
 
 class FSResources(object):
