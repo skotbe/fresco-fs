@@ -3,10 +3,10 @@ fresco-fs: filesystem resources for the fresco framework
 
 fresco-fs provides a flexible framework to load and serve
 content from a filesystem directory, integrated with
-`the fresco web framework <https://ollycope.com/software/fresco/>`.
+`the fresco web framework <https://ollycope.com/software/fresco/>`_.
 
 This package was developed for the
-`Skot.be kot listings site <https://skot.be/>`,
+`Skot.be kot listings site <https://skot.be/>`_,
 where it is used to serve some of the site's static content.
 
 Example:
