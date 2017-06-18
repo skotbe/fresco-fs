@@ -14,7 +14,7 @@
 
 import os
 
-from fresco import GET, Route, Response
+from fresco import GET, Route, Response, urlfor
 from fresco.exceptions import NotFound
 
 from fresco.util.urls import normpath as url_normpath
@@ -64,7 +64,7 @@ class FSResources(object):
     def serve_path(self, path=''):
         for action, path in self.get_candidate_paths(path):
             if action == 'redirect':
-                return Response.redirect(path)
+                return Response.redirect(urlfor(self.serve_path, path=path))
             elif action == 'serve':
                 response = self.responder(path)
                 if response is not None:
