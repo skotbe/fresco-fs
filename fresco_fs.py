@@ -30,6 +30,7 @@ class FSResources(object):
                  directory_indexes=[],
                  rewriter=None,
                  responder=None,
+                 make_index=None,
                  route_name=None):
         """
         :param search_path: List of directories to search for content
@@ -50,10 +51,13 @@ class FSResources(object):
         self.search_path = search_path
         self.rewriter = rewriter
         self.directory_indexes = directory_indexes
-        self.search_extensions = [(ext if ext.startswith('.') else '.' + ext)
-                                  for ext in search_extensions]
+        self.search_extensions = search_extensions
         self.responder = responder
         self.route_name = route_name
+        self.make_index = (make_index
+                           if make_index is not None
+                           else lambda p: Response.forbidden(
+                               'Directory listing denied'))
 
     @property
     def __routes__(self):
@@ -92,12 +96,14 @@ class FSResources(object):
                     fspath = pjoin(d, virtual_path) + ext
                     if isfile(fspath):
                         yield 'serve', fspath
-                    elif isdir(fspath):
-                        if fspath.endswith('/') or virtual_path == '':
-                            for default in self.directory_indexes:
-                                p = pjoin(fspath, default)
-                                if isfile(p):
-                                    yield 'serve', p
-                            yield 'index', p
-                        else:
-                            yield 'redirect', virtual_path + '/'
+
+                fspath = pjoin(d, virtual_path)
+                if isdir(fspath):
+                    if virtual_path.endswith('/') or virtual_path == '':
+                        for default in self.directory_indexes:
+                            p = pjoin(fspath, default)
+                            if isfile(p):
+                                yield 'serve', p
+                        yield 'index', p
+                    else:
+                        yield 'redirect', virtual_path + '/'
