@@ -52,7 +52,10 @@ class FSResources(object):
         self.search_path = search_path
         self.rewriter = rewriter
         self.directory_indexes = directory_indexes
-        self.search_extensions = search_extensions
+        self.search_extensions = [
+            (ext if ext.startswith(".") else "." + ext)
+            for ext in search_extensions
+        ]
         self.responder = responder
         self.route_name = route_name
         self.make_index = (
