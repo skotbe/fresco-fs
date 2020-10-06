@@ -19,19 +19,20 @@ from fresco.exceptions import NotFound
 
 from fresco.util.urls import normpath as url_normpath
 
-__version__ = '0.2.dev0'
+__version__ = "0.2.dev0"
 
 
 class FSResources(object):
-
-    def __init__(self,
-                 search_path,
-                 search_extensions=[],
-                 directory_indexes=[],
-                 rewriter=None,
-                 responder=None,
-                 make_index=None,
-                 route_name=None):
+    def __init__(
+        self,
+        search_path,
+        search_extensions=[],
+        directory_indexes=[],
+        rewriter=None,
+        responder=None,
+        make_index=None,
+        route_name=None,
+    ):
         """
         :param search_path: List of directories to search for content
         :param search_extensions: List of extensions to append to path
@@ -54,37 +55,41 @@ class FSResources(object):
         self.search_extensions = search_extensions
         self.responder = responder
         self.route_name = route_name
-        self.make_index = (make_index
-                           if make_index is not None
-                           else lambda p: Response.forbidden(
-                               'Directory listing denied'))
+        self.make_index = (
+            make_index
+            if make_index is not None
+            else lambda p: Response.forbidden("Directory listing denied")
+        )
 
     @property
     def __routes__(self):
         return [
-            Route('/<path:path>', GET, 'serve_path', name=self.route_name),
-            Route('/', GET, 'serve_path', path='')]
+            Route("/<path:path>", GET, "serve_path", name=self.route_name),
+            Route("/", GET, "serve_path", path=""),
+        ]
 
-    def serve_path(self, path=''):
+    def serve_path(self, path=""):
         for action, path in self.get_candidate_paths(path):
-            if action == 'redirect':
+            if action == "redirect":
                 return Response.redirect(urlfor(self.serve_path, path=path))
-            elif action == 'serve':
+            elif action == "serve":
                 response = self.responder(path)
                 if response is not None:
                     return response
-            elif action == 'index':
+            elif action == "index":
                 if self.make_index:
                     response = self.make_index(path)
                 if response is not None:
                     return response
         raise NotFound()
 
-    def get_candidate_paths(self,
-                            virtual_path,
-                            pjoin=os.path.join,
-                            isdir=os.path.isdir,
-                            isfile=os.path.isfile):
+    def get_candidate_paths(
+        self,
+        virtual_path,
+        pjoin=os.path.join,
+        isdir=os.path.isdir,
+        isfile=os.path.isfile,
+    ):
         virtual_path = url_normpath(virtual_path)
         if self.rewriter:
             virtual_paths = self.rewriter(virtual_path)
@@ -95,15 +100,15 @@ class FSResources(object):
                 for ext in self.search_extensions:
                     fspath = pjoin(d, virtual_path) + ext
                     if isfile(fspath):
-                        yield 'serve', fspath
+                        yield "serve", fspath
 
                 fspath = pjoin(d, virtual_path)
                 if isdir(fspath):
-                    if virtual_path.endswith('/') or virtual_path == '':
+                    if virtual_path.endswith("/") or virtual_path == "":
                         for default in self.directory_indexes:
                             p = pjoin(fspath, default)
                             if isfile(p):
-                                yield 'serve', p
-                        yield 'index', p
+                                yield "serve", p
+                        yield "index", p
                     else:
-                        yield 'redirect', virtual_path + '/'
+                        yield "redirect", virtual_path + "/"
