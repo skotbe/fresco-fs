@@ -30,6 +30,7 @@ class FSResources(object):
         directory_indexes=[],
         rewriter=None,
         responder=None,
+        responders=None,
         make_index=None,
         route_name=None,
     ):
@@ -47,6 +48,7 @@ class FSResources(object):
                          a list of virtual paths to serve.
         :param responder: Function that takes a file path and returns a
                           response (or None if the file can't be served).
+        :param responders: mapping of {<file extension>: responder}
         :param route_name: passed as the 'name' argument to fresco.routing.Route
         """
         self.search_path = search_path
@@ -57,6 +59,13 @@ class FSResources(object):
             for ext in search_extensions
         ]
         self.responder = responder
+        if responders:
+            self.responders = {
+                (s if s.startswith(".") else f".{s}").lower(): fn
+                for s, fn in responders.items()
+            }
+        else:
+            self.responders = {}
         self.route_name = route_name
         self.make_index = (
             make_index
@@ -71,12 +80,16 @@ class FSResources(object):
             Route("/", GET, "serve_path", path=""),
         ]
 
-    def serve_path(self, path=""):
+    def serve_path(self, path="", splitext=os.path.splitext):
         for action, path in self.get_candidate_paths(path):
             if action == "redirect":
                 return Response.redirect(urlfor(self.serve_path, path=path))
             elif action == "serve":
-                response = self.responder(path)
+                ext = splitext(path)[1].lower()
+                if ext in self.responders:
+                    response = self.responders[ext](path)
+                else:
+                    response = self.responder(path)
                 if response is not None:
                     return response
             elif action == "index":
