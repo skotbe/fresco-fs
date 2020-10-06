@@ -23,24 +23,26 @@ VERSIONFILE = "fresco_fs.py"
 
 
 def get_version():
-    return re.search("^__version__\s*=\s*['\"]([^'\"]*)['\"]",
-                     read(VERSIONFILE),
-                     re.M).group(1)
+    return re.search(
+        "^__version__\s*=\s*['\"]([^'\"]*)['\"]", read(VERSIONFILE), re.M
+    ).group(1)
 
 
 def read(*path):
-    with open(os.path.join(os.path.dirname(__file__), *path), 'rb') as f:
-        return f.read().decode('UTF-8')
+    with open(os.path.join(os.path.dirname(__file__), *path), "rb") as f:
+        return f.read().decode("UTF-8")
 
 
-setup(name='fresco-fs',
-      version=get_version(),
-      description='Filesystem resources for fresco',
-      long_description=read('README.rst') + "\n\n" + read("CHANGELOG.rst"),
-      url='https://skot.be/',
-      author='Oliver Cope',
-      author_email='oliver@redgecko.org',
-      license='Apache',
-      install_requires=['fresco'],
-      py_modules=['fresco_fs'],
-      packages=[])
+setup(
+    name="fresco-fs",
+    version=get_version(),
+    description="Filesystem resources for fresco",
+    long_description=read("README.rst") + "\n\n" + read("CHANGELOG.rst"),
+    url="https://github.com/skotbe/fresco-fs/",
+    author="Oliver Cope",
+    author_email="oliver@redgecko.org",
+    license="Apache",
+    install_requires=["fresco"],
+    py_modules=["fresco_fs"],
+    packages=[],
+)
